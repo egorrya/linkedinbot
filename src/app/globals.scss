@@ -64,6 +64,23 @@ button {
 	}
 }
 
+table {
+	margin-bottom: 60px;
+
+	tr th {
+		font-size: 18px;
+		padding-bottom: 15px;
+	}
+
+	tr td {
+		background-color: #fff;
+
+		padding: 10px;
+
+		border-radius: 10px;
+	}
+}
+
 #__next {
 	width: 100vw;
 }
@@ -83,8 +100,6 @@ button {
 }
 
 .header {
-	// margin-bottom: 15px;
-
 	h1 {
 		text-align: center;
 		margin-bottom: 15px;

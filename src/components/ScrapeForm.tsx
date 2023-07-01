@@ -48,7 +48,7 @@ const ScrapeForm: FC<ScrapeFormProps> = ({ email, password }) => {
 				</button>
 				<CopyButton
 					textToCopy={profiles.join('\r\n')}
-					disabled={profiles.length === 0 && !loading}
+					disabled={profiles.length === 0 || loading}
 				/>
 			</div>
 
