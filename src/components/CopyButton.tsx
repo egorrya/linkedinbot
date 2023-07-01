@@ -6,10 +6,10 @@ interface CopyButtonProps {
 }
 
 const CopyButton: FC<CopyButtonProps> = ({ textToCopy, disabled = false }) => {
-	const copy = (textToCopy: string) => {
+	const copy = async (textToCopy: string) => {
 		try {
-			navigator.clipboard.writeText(textToCopy);
-			alert('Successfully added to the clipboard');
+			await navigator.clipboard.writeText(textToCopy);
+			await alert('Successfully added to the clipboard');
 		} catch (err) {
 			console.error('Failed to copy text: ', err);
 		}
