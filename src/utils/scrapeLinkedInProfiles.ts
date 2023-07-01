@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 import autoScroll from './autoScroll';
 import { login } from './login';
+import randomDelay from './randomDelay';
 
 export const scrapeLinkedInProfiles = async (
 	email: string,
@@ -36,6 +37,8 @@ export const scrapeLinkedInProfiles = async (
 		do {
 			// go to search page
 			await page.goto(searchPageUrl, { waitUntil: 'networkidle2' });
+
+			await randomDelay(1, 5);
 
 			// grab all profile urls
 			const newProfiles = await page

@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 import { getRandomMessage } from './getRandomMessage';
 import { login } from './login';
+import randomDelay from './randomDelay';
 
 const directConnectButtonSelector = '.pvs-profile-actions button:nth-child(1)';
 const dropdownTriggerSelector =
@@ -19,6 +20,7 @@ export const connectToLinkedInProfiles = async (
 
 	const browser = await puppeteer.launch({ headless: false });
 	const page = await browser.newPage();
+	await page.setDefaultNavigationTimeout(125000);
 
 	await login(page, email, password);
 
@@ -27,8 +29,11 @@ export const connectToLinkedInProfiles = async (
 	for (let targetProfile of targetProfiles) {
 		try {
 			// navigate to target profile
-			await page.goto(targetProfile, { waitUntil: 'networkidle2' });
+			await page.goto(targetProfile, {
+				waitUntil: 'domcontentloaded',
+			});
 
+			await page.waitForSelector('.pv-text-details__left-panel h1');
 			const firstName = await page
 				.evaluate(() => {
 					return document
@@ -38,6 +43,7 @@ export const connectToLinkedInProfiles = async (
 				.then((res) => res?.split(' ')[0]);
 
 			// check if connect button is directly available
+			await page.waitForSelector(directConnectButtonSelector);
 			const directConnectButton = await page.evaluate((selector) => {
 				const button = document.querySelector(selector);
 				const buttonText = button?.querySelector('span');
@@ -50,12 +56,14 @@ export const connectToLinkedInProfiles = async (
 			if (directConnectButton) {
 				await page.click(directConnectButtonSelector);
 			} else {
+				await page.waitForSelector(dropdownTriggerSelector);
 				if (!dropdownTriggerSelector)
 					throw new Error(
 						`Failed to find the dropdown trigger. Failed to connect to ${targetProfile}`
 					);
 				await page.click(dropdownTriggerSelector);
 
+				await page.waitForSelector(dropdownConnectButtonSelector);
 				const dropdownConnectButton = await page.evaluate((selector) => {
 					const button = document.querySelector(selector);
 					const buttonText = button?.querySelector(
@@ -96,9 +104,7 @@ export const connectToLinkedInProfiles = async (
 			);
 		}
 
-		// random delay from 30 sec to 2 minutes
-		const delay = Math.floor(Math.random() * (120 - 30 + 1)) + 30;
-		await page.waitForTimeout(delay * 1000);
+		await randomDelay();
 	}
 
 	await browser.close();
