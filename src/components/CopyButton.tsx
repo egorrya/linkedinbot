@@ -9,7 +9,6 @@ const CopyButton: FC<CopyButtonProps> = ({ textToCopy, disabled = false }) => {
 	const copy = async (textToCopy: string) => {
 		try {
 			await navigator.clipboard.writeText(textToCopy);
-			await alert('Successfully added to the clipboard');
 		} catch (err) {
 			console.error('Failed to copy text: ', err);
 		}
