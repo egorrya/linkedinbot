@@ -1,7 +1,7 @@
 // Message's name should have this structure ", {name}"
 // Only with comma
 const messages = [
-	"Hi, {name}. My name is Egor, a Front End Developer with extensive back end tech and design experience. I am currently exploring new opportunities and aiming to enrich my professional network. I'd like to connect with you to possibly collaborating in the future.",
+	"Hi, {name}. My name is Egor, a Front End Developer with extensive back end tech and design experience. I am currently exploring new opportunities and aiming to enrich my professional network. I'd like to connect with you to possibly collaborate in the future.",
 	"Hello, {name}. I'm Egor, a Front End Developer with experience in back end technologies and design. At present, I'm seeking new opportunities and expanding my professional circle. I'm eager to connect with you with the aim of potential future collaborations.",
 	"Hey, {name}. My name is Egor, I’m a front end developer with experience in back end and design. I'm looking for the new opportunities and connecting with others to build my network. I'd like to connect with you because your expertise in recruitment could be valuable for my career.",
 	"Hello, {name}. I'm Egor, a Front End Developer with a background in back end technologies and design. As I seek new opportunities and broaden my professional connections, I'm keen to connect with you. Your proficiency in recruitment could provide valuable insights for my career.",

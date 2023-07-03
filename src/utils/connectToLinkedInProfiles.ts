@@ -94,7 +94,7 @@ export const connectToLinkedInProfiles = async (
 			);
 
 			// Send the connection request
-			// await page.click('button[aria-label="Send now"]');
+			await page.click('button[aria-label="Send now"]');
 
 			// Add profile to the list of successfully connected profiles
 			connectedProfiles.push(targetProfile);
