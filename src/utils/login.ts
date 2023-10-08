@@ -27,11 +27,7 @@ export const login = async (page: Page, email: string, password: string) => {
 		// Check if the login was successful by looking for the main element with a specific aria-label.
 		const loggedIn = await page.$('main[aria-label="Main Feed"]');
 
-		if (!loggedIn) {
-			throw new Error('Login failed');
-		} else {
-			console.log('Login successful');
-		}
+		if (loggedIn) console.log('Login successful');
 	} catch (error) {
 		// Specify the error type as Error
 		// Handle any login errors and throw a custom error message

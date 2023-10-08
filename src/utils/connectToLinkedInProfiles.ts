@@ -21,7 +21,7 @@ export const connectToLinkedInProfiles = async (
 	}
 
 	// Launch a headless Chromium browser
-	const browser = await puppeteer.launch({ headless: true });
+	const browser = await puppeteer.launch({ headless: false });
 	const page = await browser.newPage();
 	await page.setDefaultNavigationTimeout(125000);
 
