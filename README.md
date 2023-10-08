@@ -50,19 +50,3 @@ To use this bot:
 ## Disclaimer ⚠️
 
 This bot is made for educational purposes only. Make sure to respect LinkedIn's user agreement while using this bot.
-
-## Contributing 👥
-
-Contributions, issues, and feature requests are welcome. Feel free to check the [issues](https://github.com/your-username/LinkedIn-Automation-Bot/issues) page if you want to contribute.
-
-## License 📄
-
-This project is licensed under the MIT License.
-
-## Acknowledgments 👏
-
-- [Puppeteer](https://github.com/puppeteer/puppeteer) - for providing the headless browser framework.
-
----
-
-Enjoy! 🎉
