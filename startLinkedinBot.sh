@@ -26,7 +26,7 @@ if [ -z "$email" ] || [ -z "$password" ] || [ -z "$sheetTitle" ] || [ -z "$sheet
 fi
 
 # Build the URL
-# url="http://localhost:8080/api/sheetsConnect?email=$email&password=$password&sheetTitle=$sheetTitle&sheetLink=$sheetLink&numberOfTargetProfiles=$numberOfTargetProfiles"
+url="http://localhost:8080/api/sheetsConnect?email=$email&password=$password&sheetTitle=$sheetTitle&sheetLink=$sheetLink&numberOfTargetProfiles=$numberOfTargetProfiles"
 
 # Print the URL for reference
 echo "URL: $url"
