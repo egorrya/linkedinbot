@@ -1,11 +1,15 @@
 #!/bin/bash
 cd /Users/egor/Dev/linkedinbot
 
-npm start
+# Start your Next.js application in the background
+caffeinate -s npm start &
+
+# Sleep for a few seconds to allow the Next.js application to start
+sleep 5
 
 # Load environment variables from .env
-if [ -f .env ]; then
-  export $(grep -v '^#' .env | xargs)
+if [ -f .env-sh ]; then
+  export $(grep -v '^#' .env-sh | xargs)
 fi
 
 # Define the parameters for the request
@@ -21,11 +25,8 @@ if [ -z "$email" ] || [ -z "$password" ] || [ -z "$sheetTitle" ] || [ -z "$sheet
   exit 1
 fi
 
-# Encode the sheetLink parameter
-encodedSheetLink=$(echo "$sheetLink" | sed 's/\//%2F/g')
-
 # Build the URL
-url="http://localhost:$PORT/api/sheetsConnect?email=$email&password=$password&sheetTitle=$sheetTitle&sheetLink=$encodedSheetLink&numberOfTargetProfiles=$numberOfTargetProfiles"
+# url="http://localhost:8080/api/sheetsConnect?email=$email&password=$password&sheetTitle=$sheetTitle&sheetLink=$sheetLink&numberOfTargetProfiles=$numberOfTargetProfiles"
 
 # Print the URL for reference
 echo "URL: $url"
@@ -36,3 +37,4 @@ response=$(curl -s "$url")
 # Print the response
 echo "Response:"
 echo "$response"
+
