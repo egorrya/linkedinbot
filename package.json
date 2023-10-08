@@ -17,6 +17,8 @@
     "crypto-js": "^4.1.1",
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.7",
+    "google-auth-library": "^9.1.0",
+    "google-spreadsheet": "^3.3.0",
     "next": "13.4.7",
     "puppeteer": "^20.7.3",
     "react": "18.2.0",
@@ -26,6 +28,7 @@
     "use-debounce": "^9.0.4"
   },
   "devDependencies": {
-    "@types/crypto-js": "^4.1.1"
+    "@types/crypto-js": "^4.1.1",
+    "@types/google-spreadsheet": "^4.0.0"
   }
 }

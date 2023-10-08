@@ -7,22 +7,25 @@ export default async function handler(
 ) {
 	const { email, password, targetProfiles } = req.body;
 
-	let connectedProfiles: string[] = [];
+	let result = {
+		connectedProfiles: [] as string[],
+		failedProfiles: [] as string[],
+	};
 
 	try {
-		connectedProfiles = await connectToLinkedInProfiles(
+		let { result } = await connectToLinkedInProfiles(
 			email,
 			password,
 			targetProfiles
 		);
 
-		res.status(200).json(connectedProfiles);
+		res.status(200).json(result);
 	} catch (err) {
 		if (err instanceof Error) {
 			// Even in case of errors, return the connected profiles that succeeded
-			res.status(500).json({ error: err.message, connectedProfiles });
+			res.status(500).json({ error: err.message, ...result });
 		} else {
-			res.status(500).json({ error: 'An error occurred', connectedProfiles });
+			res.status(500).json({ error: 'An error occurred', ...result });
 		}
 	}
 }

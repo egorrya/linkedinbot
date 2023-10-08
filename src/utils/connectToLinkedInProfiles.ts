@@ -3,36 +3,54 @@ import { getRandomMessage } from './getRandomMessage';
 import { login } from './login';
 import randomDelay from './randomDelay';
 
+// Selectors for various buttons on LinkedIn profiles
 const directConnectButtonSelector = '.pvs-profile-actions button:nth-child(1)';
 const dropdownTriggerSelector =
 	'.pvs-profile-actions button[aria-label="More actions"]';
 const dropdownConnectButtonSelector =
-	'.pvs-overflow-actions-dropdown__content.artdeco-dropdown__content--is-open ul li:nth-child(3) ';
+	'.pvs-overflow-actions-dropdown__content.artdeco-dropdown__content--is-open ul li:nth-child(3)';
 
 export const connectToLinkedInProfiles = async (
 	email: string,
 	password: string,
 	targetProfiles: string[]
 ) => {
+	// Check if required data is missing
 	if (!email || !password || !targetProfiles.length) {
-		throw new Error('Some data is missed');
+		throw new Error('Some data is missing');
 	}
 
+	// Launch a headless Chromium browser
 	const browser = await puppeteer.launch({ headless: false });
 	const page = await browser.newPage();
 	await page.setDefaultNavigationTimeout(125000);
 
-	await login(page, email, password);
+	// Initialize result and error objects
+	const result = {
+		connectedProfiles: [] as string[],
+		failedProfiles: [] as string[],
+	};
+	let error = null;
 
-	let connectedProfiles: string[] = [];
+	try {
+		// Attempt to log in to LinkedIn
+		await login(page, email, password);
+	} catch (loginError) {
+		console.error(`Login failed: ${loginError}`);
+		error = loginError;
+		await browser.close();
+		return { result, error };
+	}
 
+	// Loop through the target LinkedIn profiles
 	for (let targetProfile of targetProfiles) {
 		try {
-			// navigate to target profile
+			// Navigate to the target LinkedIn profile
 			await page.goto(targetProfile, {
 				waitUntil: 'domcontentloaded',
 			});
 
+			// Extract the first name from the profile
 			await page.waitForSelector('.pv-text-details__left-panel h1');
 			const firstName = await page
 				.evaluate(() => {
@@ -42,7 +60,7 @@ export const connectToLinkedInProfiles = async (
 				})
 				.then((res) => res?.split(' ')[0]);
 
-			// check if connect button is directly available
+			// Check if the "Connect" button is directly available
 			await page.waitForSelector(directConnectButtonSelector);
 			const directConnectButton = await page.evaluate((selector) => {
 				const button = document.querySelector(selector);
@@ -53,6 +71,7 @@ export const connectToLinkedInProfiles = async (
 					: null;
 			}, directConnectButtonSelector);
 
+			// Click the "Connect" button (either direct or from dropdown)
 			if (directConnectButton) {
 				await page.click(directConnectButtonSelector);
 			} else {
@@ -85,6 +104,7 @@ export const connectToLinkedInProfiles = async (
 				}
 			}
 
+			// Add a note and a custom message
 			await page.waitForSelector('button[aria-label="Add a note"]');
 			await page.click('button[aria-label="Add a note"]');
 			await page.waitForSelector('.connect-button-send-invite__custom-message');
@@ -94,20 +114,25 @@ export const connectToLinkedInProfiles = async (
 			);
 
 			// Send the connection request
-			await page.click('button[aria-label="Send now"]');
+			// await page.click('button[aria-label="Send now"]');
 
-			// Add profile to the list of successfully connected profiles
-			connectedProfiles.push(targetProfile);
-		} catch (error) {
+			// Add the profile to the list of successfully connected profiles
+			result.connectedProfiles.push(targetProfile);
+		} catch (profileError) {
 			console.log(
-				`An error occurred when trying to connect to ${targetProfile}: ${error}`
+				`An error occurred when trying to connect to ${targetProfile}: ${profileError}`
 			);
+			// Add the profile to the list of failed profiles
+			result.failedProfiles.push(targetProfile);
 		}
 
-		await randomDelay();
+		// Introduce a random delay before the next profile
+		await randomDelay(5, 10);
 	}
 
+	// Close the browser
 	await browser.close();
 
-	return connectedProfiles;
+	// Return the result and any errors encountered
+	return { result, error };
 };

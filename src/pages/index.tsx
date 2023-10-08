@@ -64,6 +64,7 @@ export default function Home() {
 				<>
 					<div className='modes'>
 						<button onClick={() => setMode('connect')}>Connect</button>
+
 						<button onClick={() => setMode('scrape')}>Scrape</button>
 					</div>
 
