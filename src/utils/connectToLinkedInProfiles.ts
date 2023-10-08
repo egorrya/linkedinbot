@@ -21,7 +21,7 @@ export const connectToLinkedInProfiles = async (
 	}
 
 	// Launch a headless Chromium browser
-	const browser = await puppeteer.launch({ headless: false });
+	const browser = await puppeteer.launch({ headless: true });
 	const page = await browser.newPage();
 	await page.setDefaultNavigationTimeout(125000);
 
@@ -127,7 +127,7 @@ export const connectToLinkedInProfiles = async (
 		}
 
 		// Introduce a random delay before the next profile
-		await randomDelay(5, 10);
+		await randomDelay(30, 120);
 	}
 
 	// Close the browser
