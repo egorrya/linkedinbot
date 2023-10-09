@@ -8,12 +8,11 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	// Get query parameters
-	const email: string = req.query.email?.toString() || '';
-	const password: string = req.query.password?.toString() || '';
-	const sheetTitle: string = req.query.sheetTitle?.toString() || '';
-	const sheetLink: string = req.query.sheetLink?.toString() || '';
-	const numberOfTargetProfiles: number =
-		Number(req.query.numberOfTargetProfiles) || 35;
+	const email = String(req.query.email);
+	const password = String(req.query.password);
+	const sheetTitle = String(req.query.sheetTitle);
+	const sheetLink = String(req.query.sheetLink);
+	const numberOfTargetProfiles = Number(req.query.numberOfTargetProfiles);
 
 	// Check if required parameters are missing or empty
 	if (!email || !password || !sheetTitle || !sheetLink) {
@@ -94,8 +93,10 @@ export default async function handler(
 			if (result.connectedProfiles.includes(profile.link)) {
 				// Update the Sent column to 'TRUE' for successfully connected profiles
 				sheet.getCellByA1(`B${profile.row}`).value = 'TRUE';
-			} else {
-				// Update the Error column to 'TRUE' for failed profiles
+			}
+
+			if (result.failedProfiles.includes(profile.link)) {
+				// Update the Error column to 'TRUE' for profiles that failed to connect
 				sheet.getCellByA1(`C${profile.row}`).value = 'TRUE';
 			}
 		}

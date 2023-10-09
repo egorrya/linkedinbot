@@ -41,5 +41,6 @@ echo "$response"
 # Kill 8080 port
 kill -9 $(lsof -t -i:8080)
 
-# Exit terminal 
-exit
+# Exit in 20 seconds
+sleep 20
+exit 0
