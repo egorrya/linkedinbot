@@ -38,3 +38,8 @@ response=$(curl -s "$url")
 echo "Response:"
 echo "$response"
 
+# Kill 8080 port
+kill -9 $(lsof -t -i:8080)
+
+# Exit terminal 
+exit
