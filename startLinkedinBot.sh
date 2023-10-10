@@ -19,6 +19,13 @@ sheetTitle=$SHEET_TITLE
 sheetLink=$SHEET_LINK
 numberOfTargetProfiles=$NUMBER_OF_TARGET_PROFILES
 
+# Print the parameters for reference
+echo "Parameters:"
+echo "email: $email"
+echo "sheetTitle: $sheetTitle"
+echo "sheetLink: $sheetLink"
+echo "numberOfTargetProfiles: $numberOfTargetProfiles"
+
 # Check if required variables are set
 if [ -z "$email" ] || [ -z "$password" ] || [ -z "$sheetTitle" ] || [ -z "$sheetLink" ] || [ -z "$numberOfTargetProfiles" ]; then
   echo "Required environment variables are missing"
@@ -29,7 +36,7 @@ fi
 url="http://localhost:8080/api/sheetsConnect?email=$email&password=$password&sheetTitle=$sheetTitle&sheetLink=$sheetLink&numberOfTargetProfiles=$numberOfTargetProfiles"
 
 # Print the URL for reference
-echo "URL: $url"
+echo "Sending request"
 
 # Run the HTTP request using curl
 response=$(curl -s "$url")

@@ -14,8 +14,15 @@ export default async function handler(
 	const sheetLink = String(req.query.sheetLink);
 	const numberOfTargetProfiles = Number(req.query.numberOfTargetProfiles);
 
+	console.log('numberOfTargetProfiles', numberOfTargetProfiles);
 	// Check if required parameters are missing or empty
-	if (!email || !password || !sheetTitle || !sheetLink) {
+	if (
+		!email ||
+		!password ||
+		!sheetTitle ||
+		!sheetLink ||
+		!numberOfTargetProfiles
+	) {
 		return res
 			.status(400)
 			.json({ error: 'Required parameters are missing or empty' });
@@ -92,12 +99,12 @@ export default async function handler(
 		for (const profile of targetProfiles) {
 			if (result.connectedProfiles.includes(profile.link)) {
 				// Update the Sent column to 'TRUE' for successfully connected profiles
-				sheet.getCellByA1(`B${profile.row}`).value = 'TRUE';
+				sheet.getCellByA1(`B${profile.row}`).value = '=TRUE';
 			}
 
 			if (result.failedProfiles.includes(profile.link)) {
-				// Update the Error column to 'TRUE' for profiles that failed to connect
-				sheet.getCellByA1(`C${profile.row}`).value = 'TRUE';
+				// Update the Error column to TRUE for profiles that failed to connect
+				sheet.getCellByA1(`C${profile.row}`).value = '=TRUE';
 			}
 		}
 
