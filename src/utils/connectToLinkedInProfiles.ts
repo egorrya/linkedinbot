@@ -1,27 +1,23 @@
-import puppeteer from 'puppeteer';
+import puppeteer, { ElementHandle, JSHandle } from 'puppeteer';
 import { getRandomMessage } from './getRandomMessage';
 import { login } from './login';
 import randomDelay from './randomDelay';
 
-// Selectors for various buttons on LinkedIn profiles
-const directConnectButtonSelector = '.pvs-profile-actions button:nth-child(1)';
-const dropdownTriggerSelector =
-	'.pvs-profile-actions button[aria-label="More actions"]';
-const dropdownConnectButtonSelector =
-	'.pvs-overflow-actions-dropdown__content.artdeco-dropdown__content--is-open ul li:nth-child(3)';
-
 export const connectToLinkedInProfiles = async (
 	email: string,
 	password: string,
-	targetProfiles: string[]
+	targetProfiles: string[],
+	filterOpenToWork?: boolean,
+	namesToSkip?: string | string[]
 ) => {
 	// Check if required data is missing
 	if (!email || !password || !targetProfiles.length) {
 		throw new Error('Some data is missing');
 	}
 
-	// Launch a headless Chromium browser
-	const browser = await puppeteer.launch({ headless: false });
+	const browser = await puppeteer.launch({
+		headless: false,
+	});
 	const page = await browser.newPage();
 	await page.setDefaultNavigationTimeout(125000);
 
@@ -50,18 +46,69 @@ export const connectToLinkedInProfiles = async (
 				waitUntil: 'domcontentloaded',
 			});
 
-			// Extract the first name from the profile
+			await randomDelay(3, 5);
+
+			// Filter if the profile is open to work
+			if (filterOpenToWork) {
+				const openToWorkElement: ElementHandle | null = await page.$(
+					'.pv-open-to-carousel-card h3 strong'
+				);
+
+				let openToWorkSign: boolean = false;
+				if (openToWorkElement) {
+					const textContent: JSHandle = await openToWorkElement.getProperty(
+						'textContent'
+					);
+					const text: string = (await textContent.jsonValue()) as string;
+					openToWorkSign = text.includes('Open to work');
+				}
+
+				// If profile is open to work, skip it and move to the next one
+				if (openToWorkSign) {
+					console.log(
+						`Skipping ${targetProfile} as the profile is open to work.`
+					);
+					result.failedProfiles.push(targetProfile); // Add to failed profiles
+					continue; // Skip to the next iteration of the loop
+				}
+			}
+
+			// Extract the full name
 			await page.waitForSelector('.pv-text-details__left-panel h1');
-			const firstName = await page
-				.evaluate(() => {
-					return document
-						.querySelector('.pv-text-details__left-panel h1')
-						?.textContent?.trim();
-				})
-				.then((res) => res?.split(' ')[0]);
+			const fullName = await page.evaluate(() => {
+				return document
+					.querySelector('.pv-text-details__left-panel h1')
+					?.textContent?.trim();
+			});
+
+			const firstName = fullName?.split(' ')[0];
+
+			const standardizedNamesToSkip = new Set<string>();
+
+			if (namesToSkip) {
+				const namesArray = Array.isArray(namesToSkip)
+					? namesToSkip
+					: namesToSkip.split(',').map((name) => name.trim().toLowerCase());
+				namesArray.forEach((name) => standardizedNamesToSkip.add(name));
+			}
+
+			// Check Names to Skip
+			if (firstName && standardizedNamesToSkip.has(firstName.toLowerCase())) {
+				console.log(
+					`Skipping ${targetProfile} as the profile name is in the names to skip list.`
+				);
+				result.failedProfiles.push(targetProfile);
+				continue;
+			}
+
+			const directConnectButtonSelector = `.pvs-profile-actions > button[aria-label="Invite ${fullName} to connect"]`;
+			// Selectors for various buttons on LinkedIn profiles
+			const dropdownTriggerSelector =
+				'.pvs-profile-actions button[aria-label="More actions"]';
+			const dropdownConnectButtonSelector =
+				'.pvs-overflow-actions-dropdown__content.artdeco-dropdown__content--is-open ul li:nth-child(3)';
 
 			// Check if the "Connect" button is directly available
-			await page.waitForSelector(directConnectButtonSelector);
 			const directConnectButton = await page.evaluate((selector) => {
 				const button = document.querySelector(selector);
 				const buttonText = button?.querySelector('span');
@@ -113,8 +160,31 @@ export const connectToLinkedInProfiles = async (
 				getRandomMessage(firstName)
 			);
 
-			// Send the connection request
-			await page.click('button[aria-label="Send now"]');
+			// Fetch a handle for the "Send now" button
+			const sendNowButton: ElementHandle | null = await page.$(
+				'button[aria-label="Send now"]'
+			);
+
+			if (sendNowButton) {
+				const isDisabled: boolean = await page.evaluate(
+					(button) => button.hasAttribute('disabled'),
+					sendNowButton
+				);
+
+				if (!isDisabled) {
+					await sendNowButton.click();
+				} else {
+					console.log(
+						`"Send now" button is disabled for ${targetProfile}. Skipping without categorizing.`
+					);
+					continue; // Skip to the next iteration of the loop
+				}
+			} else {
+				console.log(
+					`"Send now" button not found for ${targetProfile}. Skipping without categorizing.`
+				);
+				continue; // Skip to the next iteration of the loop
+			}
 
 			// Add the profile to the list of successfully connected profiles
 			result.connectedProfiles.push(targetProfile);
@@ -127,12 +197,16 @@ export const connectToLinkedInProfiles = async (
 		}
 
 		// Introduce a random delay before the next profile
-		await randomDelay(30, 120);
+		await randomDelay(5, 10);
 	}
 
 	// Close the browser
 	await browser.close();
 
 	// Return the result and any errors encountered
-	return { result, error };
+	return {
+		result,
+		error,
+		errorMessages: [],
+	};
 };

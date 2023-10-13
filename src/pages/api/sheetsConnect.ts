@@ -13,8 +13,9 @@ export default async function handler(
 	const sheetTitle = String(req.query.sheetTitle);
 	const sheetLink = String(req.query.sheetLink);
 	const numberOfTargetProfiles = Number(req.query.numberOfTargetProfiles);
+	const filterOpenToWork = Boolean(req.query.filterOpenToWork);
+	const namesToSkip = String(req.query.namesToSkip);
 
-	console.log('numberOfTargetProfiles', numberOfTargetProfiles);
 	// Check if required parameters are missing or empty
 	if (
 		!email ||
@@ -79,17 +80,14 @@ export default async function handler(
 	let { result, error } = await connectToLinkedInProfiles(
 		email,
 		password,
-		targetProfiles.map((profile) => profile.link)
+		targetProfiles.map((profile) => profile.link),
+		filterOpenToWork,
+		namesToSkip
 	);
 
 	// If there was an error during LinkedIn connections, return the error
 	if (error) {
-		return res.status(500).json({ error });
-	}
-
-	// If there are no connected profiles, return an error
-	if (result.connectedProfiles.length === 0) {
-		return res.status(500).json({ error: 'No profiles connected' });
+		res.status(500).json({ error });
 	}
 
 	// Update the Google Sheet with connection results

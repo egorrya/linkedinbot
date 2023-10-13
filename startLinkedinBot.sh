@@ -18,6 +18,8 @@ password=$PASSWORD
 sheetTitle=$SHEET_TITLE
 sheetLink=$SHEET_LINK
 numberOfTargetProfiles=$NUMBER_OF_TARGET_PROFILES
+filterOpenToWork=$FILTER_OPEN_TO_WORK
+namesToSkip=$NAMES_TO_SKIP
 
 # Print the parameters for reference
 echo "Parameters:"
@@ -25,6 +27,7 @@ echo "email: $email"
 echo "sheetTitle: $sheetTitle"
 echo "sheetLink: $sheetLink"
 echo "numberOfTargetProfiles: $numberOfTargetProfiles"
+echo "filterOpenToWork: $filterOpenToWork"
 
 # Check if required variables are set
 if [ -z "$email" ] || [ -z "$password" ] || [ -z "$sheetTitle" ] || [ -z "$sheetLink" ] || [ -z "$numberOfTargetProfiles" ]; then
@@ -33,7 +36,7 @@ if [ -z "$email" ] || [ -z "$password" ] || [ -z "$sheetTitle" ] || [ -z "$sheet
 fi
 
 # Build the URL
-url="http://localhost:8080/api/sheetsConnect?email=$email&password=$password&sheetTitle=$sheetTitle&sheetLink=$sheetLink&numberOfTargetProfiles=$numberOfTargetProfiles"
+url="http://localhost:8080/api/sheetsConnect?email=$email&password=$password&sheetTitle=$sheetTitle&sheetLink=$sheetLink&numberOfTargetProfiles=$numberOfTargetProfiles&filterOpenToWork=$filterOpenToWork&namesToSkip=$namesToSkip"
 
 # Print the URL for reference
 echo "Sending request"
