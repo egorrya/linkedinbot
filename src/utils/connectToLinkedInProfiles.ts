@@ -197,7 +197,7 @@ export const connectToLinkedInProfiles = async (
 		}
 
 		// Introduce a random delay before the next profile
-		await randomDelay(5, 10);
+		await randomDelay(30, 100);
 	}
 
 	// Close the browser
