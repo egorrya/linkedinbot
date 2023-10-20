@@ -2,7 +2,7 @@
 cd /Users/egor/Dev/linkedinbot
 
 # Start your Next.js application in the background
-caffeinate -s npm start &
+npm start &
 
 # Sleep for a few seconds to allow the Next.js application to start
 sleep 5
@@ -20,6 +20,7 @@ sheetLink=$SHEET_LINK
 numberOfTargetProfiles=$NUMBER_OF_TARGET_PROFILES
 filterOpenToWork=$FILTER_OPEN_TO_WORK
 namesToSkip=$NAMES_TO_SKIP
+isMessage=$IS_MESSAGE
 
 # Print the parameters for reference
 echo "Parameters:"
@@ -28,6 +29,7 @@ echo "sheetTitle: $sheetTitle"
 echo "sheetLink: $sheetLink"
 echo "numberOfTargetProfiles: $numberOfTargetProfiles"
 echo "filterOpenToWork: $filterOpenToWork"
+echo "isMessage: $isMessage"
 
 # Check if required variables are set
 if [ -z "$email" ] || [ -z "$password" ] || [ -z "$sheetTitle" ] || [ -z "$sheetLink" ] || [ -z "$numberOfTargetProfiles" ]; then
@@ -36,13 +38,13 @@ if [ -z "$email" ] || [ -z "$password" ] || [ -z "$sheetTitle" ] || [ -z "$sheet
 fi
 
 # Build the URL
-url="http://localhost:8080/api/sheetsConnect?email=$email&password=$password&sheetTitle=$sheetTitle&sheetLink=$sheetLink&numberOfTargetProfiles=$numberOfTargetProfiles&filterOpenToWork=$filterOpenToWork&namesToSkip=$namesToSkip"
+url="http://localhost:8080/api/sheetsConnect?email=$email&password=$password&sheetTitle=$sheetTitle&sheetLink=$sheetLink&numberOfTargetProfiles=$numberOfTargetProfiles&filterOpenToWork=$filterOpenToWork&namesToSkip=$namesToSkip&isMessage=$isMessage"
 
 # Print the URL for reference
 echo "Sending request"
 
-# Run the HTTP request using curl
-response=$(curl -s "$url")
+# Run the HTTP request using curl, wrapped with caffeinate to prevent sleep while it's being processed
+response=$(caffeinate -i curl -s "$url")
 
 # Print the response
 echo "Response:"

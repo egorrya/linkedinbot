@@ -5,7 +5,17 @@ export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
-	const { email, password, targetProfiles } = req.body;
+	const { email, password, targetProfiles, isMessage } = req.body;
+
+	if (
+		!email ||
+		!password ||
+		!targetProfiles.length ||
+		typeof isMessage !== 'boolean'
+	) {
+		res.status(400).json({ error: 'Some data is missing' });
+		return;
+	}
 
 	let result = {
 		connectedProfiles: [] as string[],
@@ -16,7 +26,8 @@ export default async function handler(
 		let { result } = await connectToLinkedInProfiles(
 			email,
 			password,
-			targetProfiles
+			targetProfiles,
+			isMessage
 		);
 
 		res.status(200).json(result);

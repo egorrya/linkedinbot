@@ -7,11 +7,17 @@ export const connectToLinkedInProfiles = async (
 	email: string,
 	password: string,
 	targetProfiles: string[],
+	isMessage: boolean,
 	filterOpenToWork?: boolean,
 	namesToSkip?: string | string[]
 ) => {
 	// Check if required data is missing
-	if (!email || !password || !targetProfiles.length) {
+	if (
+		!email ||
+		!password ||
+		!targetProfiles.length ||
+		typeof isMessage !== 'boolean'
+	) {
 		throw new Error('Some data is missing');
 	}
 
@@ -151,14 +157,20 @@ export const connectToLinkedInProfiles = async (
 				}
 			}
 
-			// Add a note and a custom message
-			await page.waitForSelector('button[aria-label="Add a note"]');
-			await page.click('button[aria-label="Add a note"]');
-			await page.waitForSelector('.connect-button-send-invite__custom-message');
-			await page.type(
-				'.connect-button-send-invite__custom-message',
-				getRandomMessage(firstName)
-			);
+			if (isMessage === true) {
+				console.log(`Sending a message to ${targetProfile}`);
+
+				// Add a note and a custom message
+				await page.waitForSelector('button[aria-label="Add a note"]');
+				await page.click('button[aria-label="Add a note"]');
+				await page.waitForSelector(
+					'.connect-button-send-invite__custom-message'
+				);
+				await page.type(
+					'.connect-button-send-invite__custom-message',
+					getRandomMessage(firstName)
+				);
+			}
 
 			// Fetch a handle for the "Send now" button
 			const sendNowButton: ElementHandle | null = await page.$(

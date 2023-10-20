@@ -15,6 +15,13 @@ export default async function handler(
 	const numberOfTargetProfiles = Number(req.query.numberOfTargetProfiles);
 	const filterOpenToWork = Boolean(req.query.filterOpenToWork);
 	const namesToSkip = String(req.query.namesToSkip);
+	const isMessage = Boolean(
+		req.query.isMessage === 'false'
+			? false
+			: req.query.isMessage === 'true'
+			? true
+			: req.query.isMessage
+	);
 
 	// Check if required parameters are missing or empty
 	if (
@@ -27,6 +34,14 @@ export default async function handler(
 		return res
 			.status(400)
 			.json({ error: 'Required parameters are missing or empty' });
+	}
+
+	// check if is message is true or false and defined
+	if (
+		isMessage === undefined ||
+		(isMessage === null && typeof isMessage !== 'boolean')
+	) {
+		return res.status(500).json({ error: 'isMessage is not defined' });
 	}
 
 	// Check if the number of target profiles is within the allowed range
@@ -81,6 +96,7 @@ export default async function handler(
 		email,
 		password,
 		targetProfiles.map((profile) => profile.link),
+		isMessage,
 		filterOpenToWork,
 		namesToSkip
 	);
